@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murdoku · Edición Cumpleaños</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="overline">Expediente confidencial</div>
+  <h1>MURDOKU</h1>
+  <div class="sub">Edición Cumpleaños 🎂</div>
+  <div class="rule-line"></div>
+</header>
+
+<p class="intro">
+  Detective: se han cometido <b>tres crímenes</b> y solo tú puedes resolverlos.<br>
+  Cada caso resuelto desbloquea un <b>código secreto</b>… y los tres juntos abren tu regalo.<br>
+  Coloca a los sospechosos en el plano, sigue sus declaraciones y encuentra al culpable.
+</p>
+
+<div class="cases">
+  <div class="case-card" id="card1">
+    <div class="num">Caso 1</div>
+    <div class="emoji">☕</div>
+    <h2>El Crimen de la Cafetería</h2>
+    <div class="stars">★☆☆</div>
+    <p>Fran ha aparecido sin vida en su cafetería a la hora del cierre. Tres sospechosos, un plano pequeño… y una coartada demasiado precisa.</p>
+    <div class="slot"></div>
+  </div>
+
+  <div class="case-card" id="card2">
+    <div class="num">Caso 2</div>
+    <div class="emoji">🏡</div>
+    <h2>Misterio en la Casa Rural</h2>
+    <div class="stars">★★☆</div>
+    <p>Escapada a una casa rural de Motilla que acaba en tragedia: Lorena, la propietaria, no llegó a ver el desayuno. Cuatro huéspedes que «no oyeron nada»… pero alguien estuvo en el baño.</p>
+    <div class="slot"></div>
+  </div>
+
+  <div class="case-card" id="card3">
+    <div class="num">Caso 3 · Final</div>
+    <div class="emoji">🍷</div>
+    <h2>La Cena de Cumpleaños</h2>
+    <div class="stars">★★★</div>
+    <p>La gran noche del restaurante «La Trufa Negra» termina con el Chef Víctor sin vida en su propia cocina. El caso más difícil… y el último código.</p>
+    <div class="slot"></div>
+  </div>
+</div>
+
+<p class="intro" style="margin-top:34px" id="final-msg"></p>
+
+<script>
+(function () {
+  const cases = [
+    { id: 'caso1', href: 'caso1.html' },
+    { id: 'caso2', href: 'caso2.html' },
+    { id: 'caso3', href: 'caso3.html' }
+  ];
+  let solvedAll = true;
+  cases.forEach((c, i) => {
+    const card = document.getElementById('card' + (i + 1));
+    const slot = card.querySelector('.slot');
+    let code = null;
+    try { code = localStorage.getItem('murdoku_' + c.id); } catch (e) {}
+    const prevSolved = i === 0 || !!localStorage.getItem('murdoku_' + cases[i - 1].id);
+    if (code) {
+      card.classList.add('solved');
+      slot.innerHTML = '<div class="code-tag">✔ ' + code + '</div><a class="btn" href="' + c.href + '">Volver a jugar</a>';
+    } else if (prevSolved) {
+      solvedAll = false;
+      slot.innerHTML = '<a class="btn" href="' + c.href + '">Abrir expediente</a>';
+    } else {
+      solvedAll = false;
+      card.classList.add('locked');
+      slot.innerHTML = '<div class="lock">🔒</div><p style="min-height:auto">Resuelve antes el caso anterior.</p>';
+    }
+  });
+  if (solvedAll) {
+    document.getElementById('final-msg').innerHTML =
+      '🏆 <b>Los tres casos están cerrados.</b> Ya tienes los tres códigos…<br>Úsalos para abrir tu regalo. ¡Feliz cumpleaños, detective! ❤️';
+  }
+})();
+</script>
+</body>
+</html>

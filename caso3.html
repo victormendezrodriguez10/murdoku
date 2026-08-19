@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 3 · La Cena de Cumpleaños — Murdoku</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">← Volver al tablón de casos</a></nav>
+
+<header class="site">
+  <div class="overline">Caso nº 3 · ★★★ · Caso final</div>
+  <h1>La Cena de Cumpleaños</h1>
+  <div class="rule-line"></div>
+</header>
+
+<p class="story">
+  Gran noche en el restaurante <b>«La Trufa Negra»</b>: se celebraba un cumpleaños muy especial.
+  Pero antes del brindis, el <b>Chef Víctor</b> ha aparecido sin vida en su propio restaurante.
+  Cuatro invitados, una tarta intacta 🎂 y un barril de vino… Resuelve el último caso, detective.
+</p>
+
+<div class="game">
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+    <div class="tray" id="tray"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check">🔍 Resolver el caso</button>
+      <button class="btn" id="btn-reset">Reiniciar</button>
+      <button class="btn" id="btn-rules">¿Cómo se juega?</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <aside class="clues">
+    <h2>📜 Declaraciones</h2>
+    <div id="clue-list"></div>
+    <div class="legend">
+      <b>Recuerda:</b> una persona por fila y por columna. Los muebles ocupan casillas.
+      «Justo al lado» = casilla pegada (horizontal o vertical) y en la misma habitación.
+      «Al sur» = filas más abajo. Columnas numeradas del 1 (izquierda) al 5.
+    </div>
+    <div class="hints-box" id="hints">
+      <button class="btn" id="btn-hint">💡 Necesito una pista</button>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal de reglas -->
+<div class="overlay" id="overlay-rules">
+  <div class="modal">
+    <button class="close-x" id="btn-rules-close">✕</button>
+    <h2>Cómo se juega</h2>
+    <ul>
+      <li>Toca un <b>personaje</b> y después una <b>casilla</b> para colocarlo. Toca un personaje ya colocado para retirarlo.</li>
+      <li>Debe haber exactamente <b>una persona por fila y una por columna</b>, como en un sudoku.</li>
+      <li>Las <b>líneas gruesas</b> separan las habitaciones (su nombre aparece en una esquina). Los <b>muebles</b> ocupan casillas donde nadie puede estar.</li>
+      <li><b>«Justo al lado de»</b> = casilla pegada en horizontal o vertical, dentro de la misma habitación.</li>
+      <li><b>«Al sur»</b> = filas más abajo; <b>«al norte»</b> = más arriba. Las filas se numeran del 1 (arriba) en adelante, y las columnas del 1 (izquierda) en adelante.</li>
+      <li>Todas las declaraciones son <b>ciertas</b>. Cuando el plano esté completo, pulsa <b>«Resolver el caso»</b>.</li>
+      <li>El <b>asesino</b> es quien queda a solas con la víctima en la misma habitación.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal de victoria -->
+<div class="overlay" id="overlay-win">
+  <div class="modal">
+    <h2>🎂 ¡Último caso resuelto!</h2>
+    <p id="win-text"></p>
+    <div class="code-box">
+      <div class="label">Tercer y último código</div>
+      <div class="code" id="win-code"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-copy">Copiar código</button>
+      <a class="btn primary" href="index.html">Volver al tablón</a>
+    </div>
+    <p class="dim" style="margin-top:12px">Has cerrado los tres casos. La mejor detective que conozco. ❤️</p>
+  </div>
+</div>
+
+<script>
+window.PUZZLE = {
+  id: 'caso3',
+  n: 5,
+  code: 'CHICOTE123',
+  rooms: [
+    "RRMMM",
+    "RMMMT",
+    "CCMTT",
+    "CCBBT",
+    "CBBBT"
+  ],
+  roomNames: { R: 'Recibidor', M: 'Comedor', C: 'Cocina', B: 'Bodega', T: 'Terraza' },
+  roomColors: { R: '#3a2d3c', M: '#2b3442', C: '#3d3424', B: '#402a2f', T: '#2c3d33' },
+  furniture: [
+    { pos: [0, 0], emoji: '🚪', name: 'Puerta principal' },
+    { pos: [1, 2], emoji: '🎂', name: 'La tarta de cumpleaños' },
+    { pos: [2, 4], emoji: '🌹', name: 'Rosal' },
+    { pos: [4, 2], emoji: '🛢️', name: 'Barril de vino' }
+  ],
+  people: [
+    { id: 'V',     name: 'Chef Víctor', emoji: '💀', victim: true,
+      clue: 'El cuerpo apareció en la <b>Cocina</b>, pero <b>no en la columna 1</b>.' },
+    { id: 'Leti',  name: 'Leti',        emoji: '👑',
+      clue: '«Yo estaba en la <b>misma columna que la tarta</b> 🎂. ¡Es MI tarta y la vigilo yo!»' },
+    { id: 'Fran',  name: 'Fran',        emoji: '🥂',
+      clue: '«Yo salí a tomar el aire a la <b>Terraza</b>.»' },
+    { id: 'Gema',  name: 'Gema',        emoji: '🌸',
+      clue: '«Yo estaba <b>justo al lado del barril de vino</b> 🛢️, eligiendo botella.»' },
+    { id: 'Lucia', name: 'Lucía',       emoji: '🕶️',
+      clue: '«Yo estaba exactamente <b>una fila al sur</b> del Chef Víctor.»' }
+  ],
+  solution: { V: [2, 1], Leti: [0, 2], Fran: [1, 4], Gema: [4, 3], Lucia: [3, 0] },
+  murderer: 'Lucia',
+  reveal: 'Quiso volver a la mesa como si nada, pero la lógica no miente: «una fila al sur» del Chef… dentro de la misma Cocina. Caso cerrado.',
+  hints: [
+    'Empieza por Gema: solo hay tres casillas de la Bodega pegadas al barril, y todas están en las filas 4 y 5.',
+    'El Chef está en la Cocina, columna 2: fila 3 o fila 4. Si estuviera en la fila 4, Lucía bajaría a la fila 5… y Gema se quedaría sin sitio. Así que el Chef está en la fila 3.',
+    'Con el Chef en la fila 3 y Lucía en la 4, a Fran solo le queda una casilla de Terraza. Leti, en la columna de su tarta, solo cabe en la fila 1… y a Lucía le espera la Cocina.'
+  ]
+};
+</script>
+<script src="engine.js"></script>
+</body>
+</html>

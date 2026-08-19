@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 2 · Misterio en la Casa Rural — Murdoku</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav"><a href="index.html">← Volver al tablón de casos</a></nav>
+
+<header class="site">
+  <div class="overline">Caso nº 2 · ★★☆</div>
+  <h1>Misterio en la Casa Rural</h1>
+  <div class="rule-line"></div>
+</header>
+
+<p class="story">
+  Fin de semana de escapada en una casa rural de <b>Motilla</b>. Al amanecer, <b>Lorena</b>,
+  la propietaria, ha aparecido sin vida. Las cuatro huéspedes juran que no oyeron nada…
+  Reconstruye dónde estaba cada uno y descubre quién quedó <b>a solas con la víctima</b>.
+</p>
+
+<div class="game">
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+    <div class="tray" id="tray"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-check">🔍 Resolver el caso</button>
+      <button class="btn" id="btn-reset">Reiniciar</button>
+      <button class="btn" id="btn-rules">¿Cómo se juega?</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <aside class="clues">
+    <h2>📜 Declaraciones</h2>
+    <div id="clue-list"></div>
+    <div class="legend">
+      <b>Recuerda:</b> una persona por fila y por columna. Los muebles ocupan casillas.
+      «Justo al lado» = casilla pegada (horizontal o vertical) y en la misma habitación.
+      «Al sur» = filas más abajo.
+    </div>
+    <div class="hints-box" id="hints">
+      <button class="btn" id="btn-hint">💡 Necesito una pista</button>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal de reglas -->
+<div class="overlay" id="overlay-rules">
+  <div class="modal">
+    <button class="close-x" id="btn-rules-close">✕</button>
+    <h2>Cómo se juega</h2>
+    <ul>
+      <li>Toca un <b>personaje</b> y después una <b>casilla</b> para colocarlo. Toca un personaje ya colocado para retirarlo.</li>
+      <li>Debe haber exactamente <b>una persona por fila y una por columna</b>, como en un sudoku.</li>
+      <li>Las <b>líneas gruesas</b> separan las habitaciones (su nombre aparece en una esquina). Los <b>muebles</b> ocupan casillas donde nadie puede estar.</li>
+      <li><b>«Justo al lado de»</b> = casilla pegada en horizontal o vertical, dentro de la misma habitación.</li>
+      <li><b>«Al sur»</b> = filas más abajo; <b>«al norte»</b> = más arriba. Las filas se numeran del 1 (arriba) en adelante, y las columnas del 1 (izquierda) en adelante.</li>
+      <li>Todas las declaraciones son <b>ciertas</b>. Cuando el plano esté completo, pulsa <b>«Resolver el caso»</b>.</li>
+      <li>El <b>asesino</b> es quien queda a solas con la víctima en la misma habitación.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modal de victoria -->
+<div class="overlay" id="overlay-win">
+  <div class="modal">
+    <h2>⚖️ ¡Caso resuelto!</h2>
+    <p id="win-text"></p>
+    <div class="code-box">
+      <div class="label">Segundo código desbloqueado</div>
+      <div class="code" id="win-code"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-copy">Copiar código</button>
+      <a class="btn primary" href="caso3.html">Último caso →</a>
+    </div>
+    <p class="dim" style="margin-top:12px">Apunta el código antes de continuar, detective.</p>
+  </div>
+</div>
+
+<script>
+window.PUZZLE = {
+  id: 'caso2',
+  n: 5,
+  code: 'MOTILLA1',
+  rooms: [
+    "SSSCC",
+    "SSCCC",
+    "DDBBP",
+    "DDBPP",
+    "DDPPP"
+  ],
+  roomNames: { S: 'Salón', C: 'Cocina', D: 'Dormitorio', B: 'Baño', P: 'Porche' },
+  roomColors: { S: '#2b3442', C: '#3d3424', D: '#3a2d3c', B: '#2c3d3b', P: '#43302a' },
+  furniture: [
+    { pos: [0, 4], emoji: '🍳', name: 'Fogones' },
+    { pos: [2, 2], emoji: '🛁', name: 'Bañera' },
+    { pos: [3, 4], emoji: '🪴', name: 'Planta' },
+    { pos: [4, 0], emoji: '🛏️', name: 'Cama' }
+  ],
+  people: [
+    { id: 'V',      name: 'Lorena', emoji: '💀', victim: true,
+      clue: 'El cuerpo fue hallado en el <b>Baño</b>.' },
+    { id: 'Gema',   name: 'Gema',   emoji: '😴',
+      clue: '«Yo estaba echando la siesta en el <b>Dormitorio</b>.»' },
+    { id: 'Leti',   name: 'Leti',   emoji: '🧣',
+      clue: '«Yo estaba en una de las <b>cuatro esquinas</b> de la casa.»' },
+    { id: 'Lucia',  name: 'Lucía',  emoji: '📚',
+      clue: '«Yo estaba leyendo <b>justo al lado de los fogones</b> 🍳.»' },
+    { id: 'Raquel', name: 'Raquel', emoji: '🎸',
+      clue: '«Yo estaba exactamente <b>dos filas al sur</b> de Lucía.»' }
+  ],
+  solution: { V: [2, 3], Gema: [4, 1], Leti: [0, 0], Lucia: [1, 4], Raquel: [3, 2] },
+  murderer: 'Raquel',
+  reveal: 'Su coartada de las «dos filas al sur» la delató: el rastro de la guitarra terminaba en el baño. ¡Segundo caso resuelto!',
+  hints: [
+    'Empieza por Lucía: solo hay dos casillas pegadas a los fogones que estén dentro de la Cocina.',
+    'Si Lucía estuviera en la fila 1, Raquel iría a la fila 3… pero entonces Gema se quedaría sin ninguna casilla libre del Dormitorio. Así que Lucía está en la fila 2.',
+    'Con Lucía en la columna 5, la esquina de abajo a la derecha queda prohibida para Leti: solo le queda la de arriba a la izquierda. Sigue el rastro de Raquel… dos filas más abajo.'
+  ]
+};
+</script>
+<script src="engine.js"></script>
+</body>
+</html>
