@@ -113,17 +113,12 @@
       renderCell(r, c);
       if (!selected) selected = occupant;
     } else if (selected) {
-      if (isCrossed(r, c)) {
-        setFeedback('Esa casilla está cruzada: ya hay alguien en esa fila o columna. ✕', 'bad');
-        return;
-      }
       placement[selected] = [r, c];
       renderCell(r, c);
       selected = null;
     }
     refreshTray();
     updateCrosses();
-    setFeedback('');
     $('#btn-check').disabled = Object.keys(placement).length !== P.people.length;
   }
 
@@ -133,12 +128,15 @@
   }
 
   function updateCrosses() {
+    // Cruces informativas en las filas/columnas ocupadas
     for (let r = 0; r < n; r++)
       for (let c = 0; c < n; c++) {
         const td = $(`#cell-${r}-${c}`);
         const old = td.querySelector('.cross');
         if (old) old.remove();
-        if (isBlocked(r, c) || personAt(r, c)) continue;
+        if (personAt(r, c)) continue;
+        td.classList.remove('conflict');
+        if (isBlocked(r, c)) continue;
         if (isCrossed(r, c)) {
           const x = document.createElement('span');
           x.className = 'cross';
@@ -146,6 +144,16 @@
           td.appendChild(x);
         }
       }
+    // Personajes que comparten fila o columna se marcan en rojo
+    const ids = Object.keys(placement);
+    let conflict = false;
+    ids.forEach((id) => {
+      const [r, c] = placement[id];
+      const clash = ids.some((o) => o !== id && (placement[o][0] === r || placement[o][1] === c));
+      $(`#cell-${r}-${c}`).classList.toggle('conflict', clash);
+      if (clash) conflict = true;
+    });
+    setFeedback(conflict ? '⚠ Dos personajes comparten fila o columna.' : '', conflict ? 'bad' : '');
   }
 
   function renderCell(r, c) {

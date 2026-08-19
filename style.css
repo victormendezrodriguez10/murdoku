@@ -184,6 +184,11 @@ button.btn:disabled { opacity: .4; cursor: not-allowed; }
   user-select: none;
   line-height: 1;
 }
+.cell.conflict {
+  outline: 3px solid var(--blood);
+  outline-offset: -3px;
+  box-shadow: inset 0 0 12px rgba(163, 59, 59, 0.5);
+}
 .cell .person { line-height: 1; }
 .cell .pname {
   display: block;
