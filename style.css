@@ -177,6 +177,13 @@ button.btn:disabled { opacity: .4; cursor: not-allowed; }
   white-space: nowrap;
 }
 .cell .furn { opacity: .9; }
+.cell .cross {
+  font-size: 20px;
+  color: rgba(163, 59, 59, 0.65);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
 .cell .person { line-height: 1; }
 .cell .pname {
   display: block;

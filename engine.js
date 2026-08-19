@@ -113,13 +113,39 @@
       renderCell(r, c);
       if (!selected) selected = occupant;
     } else if (selected) {
+      if (isCrossed(r, c)) {
+        setFeedback('Esa casilla está cruzada: ya hay alguien en esa fila o columna. ✕', 'bad');
+        return;
+      }
       placement[selected] = [r, c];
       renderCell(r, c);
       selected = null;
     }
     refreshTray();
+    updateCrosses();
     setFeedback('');
     $('#btn-check').disabled = Object.keys(placement).length !== P.people.length;
+  }
+
+  // Una casilla queda cruzada si alguien ya ocupa su fila o su columna
+  function isCrossed(r, c) {
+    return Object.values(placement).some((pos) => pos[0] === r || pos[1] === c);
+  }
+
+  function updateCrosses() {
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++) {
+        const td = $(`#cell-${r}-${c}`);
+        const old = td.querySelector('.cross');
+        if (old) old.remove();
+        if (isBlocked(r, c) || personAt(r, c)) continue;
+        if (isCrossed(r, c)) {
+          const x = document.createElement('span');
+          x.className = 'cross';
+          x.textContent = '✕';
+          td.appendChild(x);
+        }
+      }
   }
 
   function renderCell(r, c) {
@@ -220,6 +246,7 @@
     });
     selected = null;
     refreshTray();
+    updateCrosses();
     setFeedback('');
     $('#btn-check').disabled = true;
   }
