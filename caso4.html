@@ -3,128 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Caso 4 · El Murdoku Definitivo — Murdoku</title>
+<title>Caso 4 · El Interrogatorio Final — Murdoku</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-/* Estilos propios del sudoku de letras (mismo lenguaje visual noir) */
-.sk-wrap { overflow-x: auto; }
-.sk-board {
+/* Estilos propios del crucigrama (mismo lenguaje visual noir) */
+.cw-wrap { overflow-x: auto; padding-bottom: 4px; }
+.cw-board {
   display: inline-block;
   background: var(--wall);
-  padding: 6px;
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid rgba(212,162,78,0.3);
   box-shadow: 0 12px 40px rgba(0,0,0,.5);
 }
-.sk-board table { border-collapse: collapse; }
-.sk-cell {
-  width: 46px; height: 46px;
-  text-align: center;
-  vertical-align: middle;
-  position: relative;
-  background: var(--paper);
-  color: var(--ink);
+.cw-board table { border-collapse: separate; border-spacing: 3px; }
+.cw-num {
+  width: 30px;
+  text-align: right;
+  padding-right: 6px;
+  color: var(--gold);
+  font-size: 13px;
   font-weight: 600;
-  font-size: 21px;
-  cursor: pointer;
-  user-select: none;
-  transition: background .1s ease;
+  white-space: nowrap;
 }
-.sk-cell.given {
-  background: #1b1611;
-  color: var(--muted);
-  cursor: default;
-  font-weight: 700;
-}
-.sk-cell:not(.given):hover { background: rgba(212,162,78,0.12); }
-.sk-cell.conflict {
-  outline: 3px solid var(--blood);
-  outline-offset: -3px;
-  box-shadow: inset 0 0 12px rgba(163, 59, 59, 0.5);
-}
-.sk-cell .keybadge {
-  position: absolute;
-  top: 1px; left: 3px;
-  font-size: 9px;
-  color: var(--gold);
-  pointer-events: none;
-  letter-spacing: .04em;
-}
-.sk-cell.keycell { box-shadow: inset 0 0 0 1px rgba(212,162,78,0.45); }
-.sk-cell.hinted { color: var(--ok); }
-.sk-board.shake { animation: shake .45s ease; }
-
-/* La clave */
-.clave-row {
-  margin: 18px auto 4px;
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.clave-slot {
-  width: 42px; height: 52px;
-  background: #14100c;
-  border: 1px dashed var(--gold);
-  border-radius: 8px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Courier New", monospace;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.clave-slot .idx {
-  position: absolute;
-  top: 2px; left: 4px;
-  font-size: 9px;
-  color: rgba(212,162,78,0.7);
-}
-.clave-slot:empty::before { content: ''; }
-.clave-slot.confirmed {
-  border-style: solid;
-  color: var(--gold);
-  text-shadow: 0 0 10px rgba(212,162,78,0.5);
-}
-.clave-label {
-  font-size: 12px; letter-spacing: .25em; text-transform: uppercase;
-  color: var(--muted); text-align: center; margin-top: 14px;
-}
-
-/* Bandeja de letras */
-.sk-tray {
-  margin: 18px auto 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  max-width: 520px;
-}
-.sk-chip {
-  background: var(--panel);
+.cw-void { width: 40px; height: 40px; }
+.cw-cell { width: 40px; height: 40px; padding: 0; }
+.cw-cell input {
+  width: 100%; height: 100%;
+  background: var(--paper);
   border: 1px solid rgba(212,162,78,0.35);
-  border-radius: 8px;
-  padding: 7px 0 4px;
-  width: 46px;
-  cursor: pointer;
+  border-radius: 5px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 600;
   text-align: center;
-  transition: border-color .1s, background .1s, opacity .1s;
+  text-transform: uppercase;
+  outline: none;
+  caret-color: var(--gold);
+  transition: background .12s ease, border-color .12s ease;
 }
-.sk-chip .letter { font-size: 21px; font-weight: 700; display: block; line-height: 1.1; }
-.sk-chip .count { font-size: 10px; color: var(--muted); }
-.sk-chip.selected { border-color: var(--gold); background: rgba(212,162,78,0.15); box-shadow: 0 0 0 2px var(--gold-soft); }
-.sk-chip.done { opacity: .3; }
+.cw-cell input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft); }
+.cw-cell.key input {
+  background: rgba(212,162,78,0.18);
+  border-color: var(--gold);
+}
+tr.row-correct .cw-cell input {
+  background: rgba(109,163,107,0.15);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+tr.row-correct .cw-cell.key input {
+  background: rgba(212,162,78,0.28);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(212,162,78,0.45);
+}
+tr.row-wrong .cw-cell input { border-color: var(--blood); color: var(--blood); }
+.cw-board.shake { animation: shake .45s ease; }
 
-@media (max-width: 560px) {
-  .sk-cell { width: 34px; height: 34px; font-size: 16px; }
-  .sk-cell .keybadge { font-size: 7px; }
-  .sk-chip { width: 36px; }
-  .sk-chip .letter { font-size: 17px; }
-  .clave-slot { width: 32px; height: 42px; font-size: 20px; }
+.cw-legend {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cw-legend .swatch {
+  display: inline-block;
+  width: 12px; height: 12px;
+  background: rgba(212,162,78,0.35);
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
+
+.clue.q-solved { opacity: .55; }
+.clue.q-solved .who { color: var(--ok); }
+.clue.q-solved .who::after { content: ' ✔'; }
+
+@media (max-width: 700px) {
+  .cw-void, .cw-cell { width: 27px; height: 27px; }
+  .cw-cell input { font-size: 14px; border-radius: 4px; }
+  .cw-num { width: 22px; font-size: 11px; padding-right: 3px; }
+  .cw-board table { border-spacing: 2px; }
 }
 </style>
 </head>
@@ -134,24 +98,21 @@
 
 <header class="site">
   <div class="overline">Caso nº 4 · ★★★★ · Prueba final</div>
-  <h1>El Murdoku Definitivo</h1>
+  <h1>El Interrogatorio Final</h1>
   <div class="rule-line"></div>
 </header>
 
 <p class="story">
-  Tres casos cerrados… y una <b>caja fuerte</b> que guarda tu regalo. Su combinación es una clave de
-  <b>ocho letras</b> que solo puede descifrar la mejor detective. Resuelve este sudoku de letras:
-  las casillas marcadas con 🗝️ (del 1 al 8) revelarán la clave definitiva.
+  Tres casos cerrados… pero en jefatura sospechan: <b>¿eres realmente la detective que dices ser?</b>
+  Solo la verdadera podría responder a estas <b>ocho preguntas</b>. Escribe cada respuesta en su fila
+  de casillas y la <b>columna dorada</b> revelará, en vertical, la <b>clave definitiva</b>. 🗝️
 </p>
 
 <div class="game">
   <div class="board-wrap">
-    <div class="sk-wrap"><div class="sk-board" id="sk-board"></div></div>
-    <div class="sk-tray" id="sk-tray"></div>
-    <div class="clave-label">🗝️ La clave definitiva</div>
-    <div class="clave-row" id="clave-row"></div>
+    <div class="cw-wrap"><div class="cw-board" id="cw-board"></div></div>
+    <div class="cw-legend"><span class="swatch"></span>La columna dorada esconde la clave, leída de arriba abajo.</div>
     <div class="actions">
-      <button class="btn primary" id="btn-check">🗝️ Abrir la caja fuerte</button>
       <button class="btn" id="btn-reset">Reiniciar</button>
       <button class="btn" id="btn-rules">¿Cómo se juega?</button>
     </div>
@@ -159,14 +120,11 @@
   </div>
 
   <aside class="clues">
-    <h2>📜 Instrucciones del caso</h2>
-    <div class="clue"><span class="face">🔤</span><span>Es un sudoku, pero con <b>nueve letras</b> en lugar de números: <b>M · A · R · Y · T · X · E · S · I</b>.</span></div>
-    <div class="clue"><span class="face">🧩</span><span>Cada <b>fila</b>, cada <b>columna</b> y cada <b>caja de 3×3</b> debe contener las nueve letras <b>sin repetir</b> ninguna.</span></div>
-    <div class="clue"><span class="face">🗝️</span><span>Las casillas marcadas con un numerito dorado forman la <b>clave de la caja fuerte</b>: sus letras, en orden del 1 al 8.</span></div>
-    <div class="clue"><span class="face">✍️</span><span>Toca una <b>letra</b> de la bandeja y luego una <b>casilla</b> para escribirla. Toca una casilla escrita para borrarla.</span></div>
+    <h2>🗣️ El interrogatorio</h2>
+    <div id="clue-list"></div>
     <div class="legend">
-      <b>Recuerda:</b> las letras fijas (en gris) no se pueden tocar. Si dos letras iguales coinciden
-      en una fila, columna o caja, se marcarán en rojo. Hay una única solución.
+      <b>Recuerda:</b> escribe cada respuesta en su fila, una letra por casilla, sin espacios ni acentos.
+      Cuando una respuesta sea correcta, se quedará fijada en verde.
     </div>
     <div class="hints-box" id="hints">
       <button class="btn" id="btn-hint">💡 Necesito una pista</button>
@@ -180,11 +138,11 @@
     <button class="close-x" id="btn-rules-close">✕</button>
     <h2>Cómo se juega</h2>
     <ul>
-      <li>Es un <b>sudoku de letras</b>: en vez de los números del 1 al 9, se usan las letras <b>M, A, R, Y, T, X, E, S, I</b>.</li>
-      <li>Cada <b>fila</b>, cada <b>columna</b> y cada <b>caja de 3×3</b> debe contener las nueve letras, <b>una sola vez</b> cada una.</li>
-      <li>Toca una <b>letra de la bandeja</b> y después una <b>casilla vacía</b> para escribirla. Toca una casilla que hayas escrito para <b>borrarla</b>. Las letras grises son fijas.</li>
-      <li>Las casillas con un <b>numerito dorado (1–8)</b> son las de la <b>clave</b>: al completarlas, sus letras aparecen abajo en orden.</li>
-      <li>Cuando el tablero esté completo, pulsa <b>«Abrir la caja fuerte»</b>. Si el sudoku es correcto… la clave es tuya. 🗝️</li>
+      <li>Lee cada <b>pregunta del interrogatorio</b>. Solo la verdadera detective conoce las respuestas.</li>
+      <li>Escribe la respuesta en su <b>fila de casillas</b>, una letra por casilla (sin espacios ni acentos). El cursor salta solo a la siguiente casilla.</li>
+      <li>Si la respuesta es correcta, la fila se queda <b>fijada en verde</b>. Si no, se marca en rojo: bórrala y prueba otra cosa.</li>
+      <li>Las casillas de la <b>columna dorada</b> forman la <b>clave definitiva</b>, leída en vertical de arriba abajo.</li>
+      <li>Cuando las ocho respuestas estén correctas… la clave será tuya. 🗝️</li>
     </ul>
   </div>
 </div>
@@ -192,8 +150,8 @@
 <!-- Modal de victoria -->
 <div class="overlay" id="overlay-win">
   <div class="modal">
-    <h2>🗝️ ¡Caja fuerte abierta!</h2>
-    <p id="win-text">Sudoku impecable, detective. Las ocho casillas marcadas han hablado y la combinación de la caja fuerte es tuya. No hay caso que se te resista… ni clave que no descifres.</p>
+    <h2>🗝️ ¡Identidad confirmada!</h2>
+    <p id="win-text">Ocho preguntas, ocho respuestas exactas. No hay duda: eres <b>la mejor detective</b>… y la persona que mejor conoce nuestra historia. La columna dorada ha hablado:</p>
     <div class="code-box">
       <div class="label">La clave definitiva</div>
       <div class="code" id="win-code"></div>
@@ -208,256 +166,175 @@
 
 <script>
 (function () {
-  const ALPHABET = ['M', 'A', 'R', 'Y', 'T', 'X', 'E', 'S', 'I'];
   const CODE = 'MARYTXER';
-  // Solución única, verificada por fuerza bruta; resoluble sin prueba y error
-  const SOL = [
-    "AXISTEMRY",
-    "SEMYXRTIA",
-    "TRYIMAXES",
-    "EARTSMYXI",
-    "MYSEIXRAT",
-    "XITRAYESM",
-    "RSEAYTIMX",
-    "YMAXEISTR",
-    "ITXMRSAYE"
+  const COL = 3; // columna dorada (índice dentro de la cuadrícula)
+  // ki = posición de la letra de la clave dentro de la respuesta
+  const ROWS = [
+    { emoji: '💒', q: '¿En qué mes es nuestra boda?',                 a: 'MAYO',        ki: 0 },
+    { emoji: '🥘', q: '¿Cuál es la comida favorita de Víctor?',       a: 'PAELLA',      ki: 1 },
+    { emoji: '❤️', q: '¿Cuál es nuestra palabra amorosa secreta?',    a: 'ESPRITSEL',   ki: 3 },
+    { emoji: '⛵', q: '¿Cómo se llama el barco?',                     a: 'EASYLIFE',    ki: 3 },
+    { emoji: '🧟', q: '¿Cuál es la mejor bebida de zombies?',         a: 'TITAN',       ki: 2 },
+    { emoji: '🌭', q: '¿Cómo se dice «guarra» (la comida) en vasco?', a: 'TXISTORRA',   ki: 1 },
+    { emoji: '💍', q: '¿Dónde te pedí matrimonio?',                   a: 'ESTRASBURGO', ki: 0 },
+    { emoji: '👶', q: '¿Cuál será el futuro nombre de mi hijo?',      a: 'RONALDO',     ki: 0 }
   ];
-  const GIVEN = [
-    "A.IS..M..",
-    "S...XR.I.",
-    "....MAX..",
-    "E..T.....",
-    ".Y.E.X.A.",
-    ".....Y..M",
-    "..EAY....",
-    ".M.XE...R",
-    "..X..SA.E"
-  ];
-  // Casillas de la clave (fila, col), en orden de lectura: deletrean MARYTXER
-  const KEYS = [[1, 2], [1, 8], [2, 1], [2, 2], [4, 8], [5, 0], [5, 6], [6, 0]];
+  const WIDTH = Math.max(...ROWS.map((w) => COL - w.ki + w.a.length));
 
-  let selected = null;      // letra seleccionada en la bandeja
   let hintsShown = 0;
-  let attempts = 0;
-  const board = [];         // valor actual de cada casilla ('' si vacía)
+  const solvedRows = ROWS.map(() => false);
 
   const $ = (sel) => document.querySelector(sel);
-  const cellEl = (r, c) => $(`#sk-${r}-${c}`);
-  const isGiven = (r, c) => GIVEN[r][c] !== '.';
-  const keyIndex = (r, c) => KEYS.findIndex((k) => k[0] === r && k[1] === c);
+  const inputEl = (row, i) => $(`#in-${row}-${i}`); // i = índice de letra dentro de la respuesta
 
   /* ---------- Tablero ---------- */
   function buildBoard() {
     const table = document.createElement('table');
-    for (let r = 0; r < 9; r++) {
-      board.push([]);
-      const row = document.createElement('tr');
-      for (let c = 0; c < 9; c++) {
+    ROWS.forEach((w, row) => {
+      const tr = document.createElement('tr');
+      tr.id = 'row-' + row;
+      const num = document.createElement('td');
+      num.className = 'cw-num';
+      num.textContent = w.emoji + ' ' + (row + 1) + '.';
+      tr.appendChild(num);
+      const start = COL - w.ki;
+      for (let c = 0; c < WIDTH; c++) {
         const td = document.createElement('td');
-        td.className = 'sk-cell';
-        td.id = `sk-${r}-${c}`;
-        // Muros gruesos entre cajas de 3x3, como en los planos
-        const wall = '3px solid var(--wall)';
-        const inner = '1px solid rgba(0,0,0,0.35)';
-        td.style.borderTop = r % 3 === 0 ? wall : inner;
-        td.style.borderLeft = c % 3 === 0 ? wall : inner;
-        td.style.borderBottom = r === 8 ? wall : inner;
-        td.style.borderRight = c === 8 ? wall : inner;
-
-        const ki = keyIndex(r, c);
-        if (ki !== -1) {
-          td.classList.add('keycell');
-          const badge = document.createElement('span');
-          badge.className = 'keybadge';
-          badge.textContent = '🗝' + (ki + 1);
-          td.appendChild(badge);
-          td.title = 'Letra ' + (ki + 1) + ' de la clave';
-        }
-        if (isGiven(r, c)) {
-          td.classList.add('given');
-          td.appendChild(document.createTextNode(GIVEN[r][c]));
-          board[r].push(GIVEN[r][c]);
+        const i = c - start;
+        if (i >= 0 && i < w.a.length) {
+          td.className = 'cw-cell' + (c === COL ? ' key' : '');
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.maxLength = 2; // margen para sobrescribir; se recorta a 1 en el handler
+          inp.autocomplete = 'off';
+          inp.autocapitalize = 'characters';
+          inp.spellcheck = false;
+          inp.id = `in-${row}-${i}`;
+          inp.setAttribute('aria-label', `Pregunta ${row + 1}, letra ${i + 1}`);
+          inp.addEventListener('input', () => onInput(row, i));
+          inp.addEventListener('keydown', (e) => onKeyDown(e, row, i));
+          inp.addEventListener('focus', () => inp.select());
+          td.appendChild(inp);
         } else {
-          board[r].push('');
-          td.addEventListener('click', () => onCellClick(r, c));
+          td.className = 'cw-void';
         }
-        row.appendChild(td);
+        tr.appendChild(td);
       }
-      table.appendChild(row);
+      table.appendChild(tr);
+    });
+    $('#cw-board').appendChild(table);
+  }
+
+  /* ---------- Escritura ---------- */
+  function onInput(row, i) {
+    const inp = inputEl(row, i);
+    const clean = inp.value.toUpperCase().replace(/[^A-ZÑ]/g, '');
+    inp.value = clean.slice(-1);
+    $('#row-' + row).classList.remove('row-wrong');
+    if (inp.value && i + 1 < ROWS[row].a.length) {
+      inputEl(row, i + 1).focus();
     }
-    $('#sk-board').appendChild(table);
+    checkRow(row);
   }
 
-  /* ---------- Bandeja ---------- */
-  function buildTray() {
-    const tray = $('#sk-tray');
-    ALPHABET.forEach((L) => {
-      const chip = document.createElement('div');
-      chip.className = 'sk-chip';
-      chip.id = 'chip-' + L;
-      chip.innerHTML = `<span class="letter">${L}</span><span class="count"></span>`;
-      chip.addEventListener('click', () => {
-        selected = selected === L ? null : L;
-        refreshTray();
-      });
-      tray.appendChild(chip);
-    });
-    refreshTray();
-  }
-
-  function refreshTray() {
-    const counts = {};
-    ALPHABET.forEach((L) => (counts[L] = 0));
-    for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        if (board[r][c]) counts[board[r][c]]++;
-    ALPHABET.forEach((L) => {
-      const chip = $('#chip-' + L);
-      chip.querySelector('.count').textContent = (9 - counts[L]) + ' por poner';
-      chip.classList.toggle('done', counts[L] >= 9);
-      chip.classList.toggle('selected', selected === L);
-    });
-  }
-
-  /* ---------- Juego ---------- */
-  function onCellClick(r, c) {
-    const td = cellEl(r, c);
-    if (board[r][c]) {
-      // Borrar y quedarse con esa letra seleccionada
-      selected = board[r][c];
-      board[r][c] = '';
-      td.classList.remove('hinted');
-      setCellText(td, '');
-    } else if (selected) {
-      board[r][c] = selected;
-      setCellText(td, selected);
+  function onKeyDown(e, row, i) {
+    if (e.key === 'Backspace' && !inputEl(row, i).value && i > 0) {
+      e.preventDefault();
+      const prev = inputEl(row, i - 1);
+      prev.value = '';
+      prev.focus();
+      $('#row-' + row).classList.remove('row-wrong');
+    } else if (e.key === 'ArrowLeft' && i > 0) {
+      inputEl(row, i - 1).focus();
+    } else if (e.key === 'ArrowRight' && i + 1 < ROWS[row].a.length) {
+      inputEl(row, i + 1).focus();
     }
-    afterChange();
   }
 
-  function setCellText(td, text) {
-    td.childNodes.forEach((n) => { if (n.nodeType === 3) n.remove(); });
-    if (text) td.appendChild(document.createTextNode(text));
+  function rowValue(row) {
+    let s = '';
+    for (let i = 0; i < ROWS[row].a.length; i++) s += inputEl(row, i).value || ' ';
+    return s;
   }
 
-  function afterChange() {
-    refreshTray();
-    updateConflicts();
-    updateClave();
-    let filled = 0;
-    for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) if (board[r][c]) filled++;
-    $('#btn-check').disabled = filled !== 81;
-  }
-
-  function updateConflicts() {
-    const bad = new Set();
-    const mark = (cells) => {
-      const byLetter = {};
-      cells.forEach(([r, c]) => {
-        const v = board[r][c];
-        if (!v) return;
-        (byLetter[v] = byLetter[v] || []).push(r + '-' + c);
-      });
-      Object.values(byLetter).forEach((list) => {
-        if (list.length > 1) list.forEach((k) => bad.add(k));
-      });
-    };
-    for (let r = 0; r < 9; r++) mark(Array.from({ length: 9 }, (_, c) => [r, c]));
-    for (let c = 0; c < 9; c++) mark(Array.from({ length: 9 }, (_, r) => [r, c]));
-    for (let br = 0; br < 3; br++)
-      for (let bc = 0; bc < 3; bc++)
-        mark([0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => [br * 3 + r, bc * 3 + c])));
-
-    for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        cellEl(r, c).classList.toggle('conflict', bad.has(r + '-' + c));
-    setFeedback(bad.size ? '⚠ Hay letras repetidas en una fila, columna o caja.' : '', bad.size ? 'bad' : '');
-  }
-
-  function updateClave() {
-    KEYS.forEach(([r, c], i) => {
-      const slot = $('#slot-' + i);
-      slot.childNodes.forEach((n) => { if (n.nodeType === 3) n.remove(); });
-      if (board[r][c]) slot.appendChild(document.createTextNode(board[r][c]));
-    });
-  }
-
-  function buildClave() {
-    const row = $('#clave-row');
-    KEYS.forEach((_, i) => {
-      const slot = document.createElement('div');
-      slot.className = 'clave-slot';
-      slot.id = 'slot-' + i;
-      slot.innerHTML = `<span class="idx">${i + 1}</span>`;
-      row.appendChild(slot);
-    });
-  }
-
-  /* ---------- Comprobación ---------- */
-  function check() {
-    attempts++;
-    let wrong = 0;
-    for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        if (board[r][c] !== SOL[r][c]) wrong++;
-    if (wrong === 0) {
-      win();
+  function checkRow(row) {
+    const val = rowValue(row);
+    if (val.includes(' ')) return; // aún incompleta
+    if (val === ROWS[row].a) {
+      solvedRows[row] = true;
+      const tr = $('#row-' + row);
+      tr.classList.remove('row-wrong');
+      tr.classList.add('row-correct');
+      for (let i = 0; i < ROWS[row].a.length; i++) inputEl(row, i).disabled = true;
+      document.getElementById('q-' + row).classList.add('q-solved');
+      const done = solvedRows.filter(Boolean).length;
+      if (done === ROWS.length) {
+        setFeedback('', '');
+        setTimeout(win, 600);
+      } else {
+        setFeedback(`✔ Respuesta ${row + 1} correcta (${done}/${ROWS.length}).`, 'good');
+        focusNextPending(row);
+      }
     } else {
-      const el = $('#sk-board');
-      el.classList.remove('shake');
-      void el.offsetWidth;
-      el.classList.add('shake');
-      const msg = attempts >= 2
-        ? `La caja fuerte no cede… hay ${wrong} casilla${wrong === 1 ? '' : 's'} incorrecta${wrong === 1 ? '' : 's'}. 🔍`
-        : 'La caja fuerte no cede… algo no encaja en el sudoku. 🔍';
-      setFeedback(msg, 'bad');
+      $('#row-' + row).classList.add('row-wrong');
+      const board = $('#cw-board');
+      board.classList.remove('shake');
+      void board.offsetWidth;
+      board.classList.add('shake');
+      setFeedback('Esa respuesta no encaja… revisa la pregunta. 🔍', 'bad');
     }
   }
 
-  function win() {
-    try { localStorage.setItem('murdoku_caso4', CODE); } catch (e) {}
-    KEYS.forEach((_, i) => $('#slot-' + i).classList.add('confirmed'));
-    $('#win-code').textContent = CODE;
-    $('#overlay-win').classList.add('open');
-    confetti();
+  function focusNextPending(fromRow) {
+    for (let k = 1; k <= ROWS.length; k++) {
+      const r = (fromRow + k) % ROWS.length;
+      if (!solvedRows[r]) {
+        for (let i = 0; i < ROWS[r].a.length; i++) {
+          if (!inputEl(r, i).value) { inputEl(r, i).focus(); return; }
+        }
+        inputEl(r, 0).focus();
+        return;
+      }
+    }
+  }
+
+  /* ---------- Preguntas ---------- */
+  function buildClues() {
+    const box = $('#clue-list');
+    ROWS.forEach((w, i) => {
+      const div = document.createElement('div');
+      div.className = 'clue';
+      div.id = 'q-' + i;
+      div.innerHTML = `<span class="face">${w.emoji}</span><span><span class="who">${i + 1}.</span> ${w.q} ` +
+        `<span style="color:var(--muted)">(${w.a.length} letras)</span></span>`;
+      box.appendChild(div);
+    });
   }
 
   /* ---------- Botones ---------- */
   function reset() {
-    for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        if (!isGiven(r, c) && board[r][c]) {
-          board[r][c] = '';
-          const td = cellEl(r, c);
-          td.classList.remove('hinted');
-          setCellText(td, '');
-        }
-    selected = null;
-    KEYS.forEach((_, i) => $('#slot-' + i).classList.remove('confirmed'));
-    afterChange();
+    ROWS.forEach((w, row) => {
+      solvedRows[row] = false;
+      const tr = $('#row-' + row);
+      tr.classList.remove('row-correct', 'row-wrong');
+      document.getElementById('q-' + row).classList.remove('q-solved');
+      for (let i = 0; i < w.a.length; i++) {
+        const inp = inputEl(row, i);
+        inp.disabled = false;
+        inp.value = '';
+      }
+    });
     setFeedback('');
+    inputEl(0, 0).focus();
   }
 
   function showHint() {
-    if (hintsShown >= 3) return;
-    // Preferir una casilla de la clave vacía; si no, la primera vacía
-    let target = KEYS.find(([r, c]) => !board[r][c]);
-    if (!target) {
-      outer:
-      for (let r = 0; r < 9; r++)
-        for (let c = 0; c < 9; c++)
-          if (!board[r][c]) { target = [r, c]; break outer; }
-    }
-    if (!target) return;
-    const [r, c] = target;
-    board[r][c] = SOL[r][c];
-    const td = cellEl(r, c);
-    td.classList.add('hinted');
-    setCellText(td, SOL[r][c]);
-    afterChange();
+    const idx = ROWS.findIndex((w, i) => !solvedRows[i] && !document.getElementById('q-' + i).dataset.hinted);
+    if (idx === -1) return;
+    document.getElementById('q-' + idx).dataset.hinted = '1';
     const div = document.createElement('div');
     div.className = 'hint-revealed';
-    div.textContent = `🔎 Fila ${r + 1}, columna ${c + 1}: ahí va una «${SOL[r][c]}». Queda escrita en verde.`;
+    div.innerHTML = `🔎 Pregunta ${idx + 1}: la respuesta es <b>${ROWS[idx].a}</b>.`;
     $('#hints').appendChild(div);
     hintsShown++;
     if (hintsShown >= 3) {
@@ -470,6 +347,14 @@
     const f = $('#feedback');
     f.textContent = text;
     f.className = 'feedback' + (cls ? ' ' + cls : '');
+  }
+
+  /* ---------- Victoria ---------- */
+  function win() {
+    try { localStorage.setItem('murdoku_caso4', CODE); } catch (e) {}
+    $('#win-code').textContent = CODE;
+    $('#overlay-win').classList.add('open');
+    confetti();
   }
 
   function confetti() {
@@ -510,10 +395,7 @@
   /* ---------- Init ---------- */
   document.addEventListener('DOMContentLoaded', () => {
     buildBoard();
-    buildTray();
-    buildClave();
-    $('#btn-check').disabled = true;
-    $('#btn-check').addEventListener('click', check);
+    buildClues();
     $('#btn-reset').addEventListener('click', reset);
     $('#btn-hint').addEventListener('click', showHint);
     $('#btn-rules').addEventListener('click', () => $('#overlay-rules').classList.add('open'));
