@@ -20,7 +20,8 @@
 <p class="intro">
   Detective: se han cometido <b>tres crímenes</b> y solo tú puedes resolverlos.<br>
   Cada caso resuelto desbloquea un <b>código secreto</b>… y los tres juntos abren tu regalo.<br>
-  Coloca a los sospechosos en el plano, sigue sus declaraciones y encuentra al culpable.
+  Coloca a los sospechosos en el plano, sigue sus declaraciones y encuentra al culpable.<br>
+  Y cuando los tres casos estén cerrados… te espera una <b>prueba final</b>. 🗝️
 </p>
 
 <div class="cases">
@@ -50,6 +51,15 @@
     <p>La gran noche del restaurante «La Trufa Negra» termina con el Chef Víctor sin vida en su propia cocina. El caso más difícil… y el último código.</p>
     <div class="slot"></div>
   </div>
+
+  <div class="case-card" id="card4">
+    <div class="num">Caso 4 · Prueba Final</div>
+    <div class="emoji">🗝️</div>
+    <h2>El Interrogatorio Final</h2>
+    <div class="stars">★★★★</div>
+    <p>En jefatura dudan de tu identidad: solo la verdadera detective conoce las respuestas. Ocho preguntas, una sopa de letras… y la clave definitiva.</p>
+    <div class="slot"></div>
+  </div>
 </div>
 
 <p class="intro" style="margin-top:34px" id="final-msg"></p>
@@ -59,7 +69,8 @@
   const cases = [
     { id: 'caso1', href: 'caso1.html' },
     { id: 'caso2', href: 'caso2.html' },
-    { id: 'caso3', href: 'caso3.html' }
+    { id: 'caso3', href: 'caso3.html' },
+    { id: 'caso4', href: 'caso4.html' }
   ];
   let solvedAll = true;
   cases.forEach((c, i) => {
@@ -82,7 +93,7 @@
   });
   if (solvedAll) {
     document.getElementById('final-msg').innerHTML =
-      '🏆 <b>Los tres casos están cerrados.</b> Ya tienes los tres códigos…<br>Úsalos para abrir tu regalo. ¡Feliz cumpleaños, detective! ❤️';
+      '🏆 <b>Todos los expedientes están cerrados.</b> Tienes los tres códigos y la clave definitiva…<br>Úsalos para abrir tu regalo. ¡Feliz cumpleaños, detective! ❤️';
   }
 })();
 </script>
